@@ -1,4 +1,4 @@
-function stagecrew(camera, scene){
+function stagecrew(camera, scene, lights){
   //Initialize dat.gui, framework for controls
   var gui = new dat.GUI();
 
@@ -41,19 +41,19 @@ function stagecrew(camera, scene){
     //Add new light to scene
     var light = new THREE.SpotLight(0xffffff, 1);
     var lightInit = 'new THREE.SpotLight(0xffffff, 1)';
-    if(type == 'AmbientLight'){
+    if(type == 'ambientLight'){
       light = new THREE.AmbientLight(0xffffff, 1);
       lightInit = 'new THREE.AmbientLight(0xffffff, 1)';
     }
-    if(type == 'PointLight'){
+    if(type == 'pointLight'){
       light = new THREE.PointLight(0xffffff, 1);
       lightInit = 'new THREE.PointLight(0xffffff, 1)';
     }
-    if(type == 'RectLight'){
+    if(type == 'rectLight'){
       light = new THREE.RectAreaLight(0xffffff, 1, 10, 10);
       lightInit = 'new THREE.RectAreaLight(0xffffff, 1, 10, 10)';
     }
-    if(type == 'DirectionalLight'){
+    if(type == 'directionalLight'){
       light = new THREE.DirectionalLight(0xffffff, 1);
       lightInit = 'new THREE.DirectionalLight(0xffffff, 1)';
     }
@@ -69,13 +69,13 @@ function stagecrew(camera, scene){
 
     //Editable properties for light
     var lightFolder = gui.addFolder(type + ' ' + light.id);
-    lightFolder.add(light.position, 'x', -200,200).listen().onChange(function(val){
+    lightFolder.add(light.position, 'x', -500,500).listen().onChange(function(val){
       myProps[type + light.id + '.position.x'] = val.toFixed(3);
     });
-    lightFolder.add(light.position, 'y', -200,200).listen().onChange(function(val){
+    lightFolder.add(light.position, 'y', -500,500).listen().onChange(function(val){
       myProps[type + light.id + '.position.y'] = val.toFixed(3);
     });
-    lightFolder.add(light.position, 'z', -200,200).listen().onChange(function(val){
+    lightFolder.add(light.position, 'z', -500,500).listen().onChange(function(val){
       myProps[type + light.id + '.position.z'] = val.toFixed(3);
     });
     lightFolder.addColor(light, 'color').listen().onChange(function(val){
@@ -84,6 +84,22 @@ function stagecrew(camera, scene){
     lightFolder.add(light, 'intensity', 0.01, 2.55).listen().onChange(function(val){
       myProps[type + light.id + '.intensity'] = val.toFixed(3);
     });
+    if(type == 'spotLight'){
+      lightFolder.add(light, 'penumbra', -0.01, 1.01).listen().onChange(function(val){
+        myProps[type + light.id + '.penumbra'] = val.toFixed(3);
+      });
+    }
+    if(type == 'rectLight'){
+      lightFolder.add(light.rotation, 'x', -Math.PI, Math.PI).listen().onChange(function(val){
+        myProps[type + light.id + '.rotation.x'] = val.toFixed(3);
+      });
+      lightFolder.add(light.rotation, 'y', -Math.PI, Math.PI).listen().onChange(function(val){
+        myProps[type + light.id + '.rotation.y'] = val.toFixed(3);
+      });
+      lightFolder.add(light.rotation, 'z', -Math.PI, Math.PI).listen().onChange(function(val){
+        myProps[type + light.id + '.rotation.z'] = val.toFixed(3);
+      });
+    }
 
     //Loop to regenerate code for changed properties
     setInterval(function(){
@@ -100,11 +116,9 @@ function stagecrew(camera, scene){
         }
       }
     }, 1500);
-
-    // light.position.x = 40;
-    // light.position.y = 9;
-    // light.position.z = 31;
   }
-  lightcrew('rectLight');
-  lightcrew('directionalLight');
+  for (var i = 0; i < lights.length; i++) {
+    lightcrew(lights[i]);
+  }
+
 }
